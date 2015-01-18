@@ -1,17 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
-echo: true
----
-
-When writing co de chunks in the R markdown
-do cument, always use echo = TRUE so that someone else will be able to read
-the code.
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
+unzip("activity.zip")
 activity_data <- read.csv("activity.csv") 
 ```
 
@@ -20,7 +12,8 @@ activity_data <- read.csv("activity.csv")
 For this part of the assignment, you can ignore the missing values in the dataset.  
 1. Make a histogram of the total number of steps taken each day  
 
-```{r}
+
+```r
 #Take a subset of data ignoring missing values
 activity=subset(activity_data, activity_data!='NA')
 #aggregate by day
@@ -29,17 +22,32 @@ total_steps_by_day = aggregate(activity$steps, by=list(activity$date), FUN="sum"
 hist(total_steps_by_day$x, main="Histogram of steps taken each day", xlab="Total steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
 2. Calculate and report the mean and median total number of steps taken
 per day
-```{r}
+
+```r
 mean(total_steps_by_day$x)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(total_steps_by_day$x)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis)
 and the average number of steps taken, averaged across all days (y-axis)
-```{r}
+
+```r
 avg_steps_by_interval = aggregate(
   activity$steps, 
   by=list(activity$interval), 
@@ -47,24 +55,32 @@ avg_steps_by_interval = aggregate(
 plot(avg_steps_by_interval, type="l")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 2. Which 5-minute interval, on average across all the days in the dataset,
 contains the maximum number of steps?
-```{r}
+
+```r
 row_idx=which.max(avg_steps_by_interval$x)
 avg_steps_by_interval[row_idx,]$Group.1
 ```
-Interval with the label `r avg_steps_by_interval[row_idx,]$Group.1` on average contains the maximum number of steps at mean `r round(avg_steps_by_interval[row_idx,]$x,2)`.
+
+```
+## [1] 835
+```
+Interval with the label 835 on average contains the maximum number of steps at mean 206.17.
 
 ## Imputing missing values
 
 Note that there are a numb er of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.  
 1. Calculate and report the total number of missing values in the dataset
 (i.e. the total number of rows with NAs)  
-```{r}
+
+```r
 ok<-complete.cases(activity_data$steps)
 missing_data_cnt<-sum(!ok)
 ```
-There are `r missing_data_cnt` records with missing data.
+There are 2304 records with missing data.
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.  
 Using 5-minute interval mean as imputed value for records with missing data is a suitable approach in this scenario.
